@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // google地图对象
+    const googleMap = {
+      show() {
+        console.log('加载谷歌地图');
+      }
+    }
+    // 百度地图对象
+    const baiduMap = {
+      display() {
+        console.log('加载百度地图');
+      }
+    }
+
+    // 百度地图适配器
+    const baiduMapAdapter = {
+      show() {
+        baiduMap.display();
+      }
+    }
+
+    // 外部调用者
+    function renderMap(map) {
+      map.show();
+    }
+
+    renderMap(googleMap);
+    renderMap(baiduMapAdapter);
+  </script>
+</body>
+</html>

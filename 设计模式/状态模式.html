@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #000;
+    }
+    .light {
+      width: 100px;
+      position: fixed;
+      top: 0;
+      left: 50%;
+      margin-left: -50px;
+    }
+    .light-line {
+      width: 1px;
+      height: 50px;
+      background-color: white;
+      transform: scaleX(0.5);
+    }
+    #light {
+      position: absolute;
+      top: 50px;
+      left: -30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 30px;
+    }
+    .close {
+      border: 1px solid #ccc;
+    }
+    .weak {
+      box-shadow: 0 0 10px 2px antiquewhite;
+      background-color: antiquewhite;
+    }
+    .strong {
+      box-shadow: 0 0 10px 2px white;
+      background-color: white;
+    }
+    .btn {
+      margin: 50px;
+      padding: 0 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="light">
+    <div class="light-line"></div>
+    <div id="light" class="close"></div>
+  </div>
+  <button class="btn">弱光</button>
+  <script>
+    /**
+     * 按钮控制灯的状态，关闭-->弱光-->强光-->关闭
+     */
+    class Close {
+      constructor(light) {
+        this.light = light;
+      }
+      btnIsClick() {
+        this.light.button.innerText = '强光';
+        this.light.light.className = 'weak';
+        this.light.setState(this.light.weakLightState);
+      }
+    }
+
+    class Weak {
+      constructor(light) {
+        this.light = light;
+      }
+      btnIsClick() {
+        this.light.button.innerText = '关灯';
+        this.light.light.className = 'strong';
+        this.light.setState(this.light.strongLightState);
+      }
+    }
+
+    class Strong {
+      constructor(light) {
+        this.light = light;
+      }
+      btnIsClick() {
+        this.light.button.innerText = '弱光';
+        this.light.light.className = 'close';
+        this.light.setState(this.light.closeLightState);
+      }
+    }
+    
+    class Light {
+      constructor() {
+        this.closeLightState = new Close(this);
+        this.weakLightState = new Weak(this);
+        this.strongLightState = new Strong(this);
+        
+        this.currState = this.closeLightState;
+
+        this.light = document.querySelector('#light');
+        this.button = document.querySelector('.btn');
+        this.button.onclick = () => {
+          this.currState.btnIsClick();
+        }
+      }
+      setState(state) {
+        this.currState = state;
+      }
+    }
+
+    new Light();
+  </script>
+</body>
+</html>

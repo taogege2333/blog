@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    img {
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    /** 
+     * 保护代理
+     * 孩子帮妈妈
+     */
+
+    // 菜类
+    class Food {
+      constructor(name) {
+        this.name = name;
+      }
+
+      getName() {
+        return this.name;
+      }
+    }
+
+    // 家务类
+    class HouseWork {
+      constructor(name) {
+        this.name = name;
+      }
+
+      getName() {
+        return this.name;
+      }
+    }
+
+    // 孩子对象
+    const child = {
+      buyFood(food) {
+        mother.buyFood(food);
+      },
+      doHouseWork(houseWork) {
+        mother.doHouseWork(houseWork);
+      }
+    }
+
+    // 妈妈对象
+    const mother = {
+      buyFood(food) {
+        console.log('买了' + food.getName());
+      },
+      doHouseWork(houseWork) {
+        console.log('做了家务：' + houseWork.getName());
+      }
+    }
+
+    child.buyFood(new Food('西红柿'));
+    child.doHouseWork(new HouseWork('扫地'));
+  </script>
+  <script>
+    /**
+     * 虚拟代理
+     * 图片预加载
+     */
+
+    // 图片对象
+    const myImage = (function () {
+      const image = new Image();
+      document.body.appendChild(image);
+      return {
+        setSrc(src) {
+          image.src = src;
+        }
+      }
+    })()
+
+    // 预加载对象
+    const preImage = (function () {
+      const image = new Image();
+      image.onload = function () {
+        myImage.setSrc(image.src);
+      }
+      return {
+        setSrc(src) {
+          myImage.setSrc('./loading.jpg');
+          image.src = src;
+        }
+      }
+    })()
+
+    preImage.setSrc('https://lc-gold-cdn.xitu.io/5d70fd6af940df373834.png?imageView2/2/w/200/h/64/q/85/format/webp/interlace/1');
+  </script>
+  <script>
+    /**
+     * 缓存代理
+     */
+    function multAdd(...args) {
+      let res = 0;
+      for(let val of args) {
+        res += val;
+      }
+      return res;
+    }
+
+    const proxyAdd = (function () {
+      const cache = new Map();
+      return function (...args) {
+        const key = args.join(',');
+        if(cache.has(key)) {
+          return cache.get(key);
+        }
+        const val = multAdd(...args);
+        cache.set(key, val);
+        return val;
+      }
+    })()
+
+    console.log(proxyAdd(1,2,3,4));
+    console.log(proxyAdd(2,3,4,5));
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 租客类
+    class Tenant {
+      constructor(name) {
+        this.name = name;
+        middle.reciveMessage('addTenant', this);
+      }
+      findRoom() {
+        middle.reciveMessage('findRoom', this);
+      }
+    }
+
+    // 中介
+    const middle = (function () {
+      // 租客
+      const tenants = [];
+      // 操作
+      const operations = []
+
+      operations.addTenant = (tenant) => {
+        tenants.push(tenant);
+      }
+
+      operations.findRoom = (tenant) => {
+        console.log(tenant.name + '找房子');
+      }
+
+      return {
+        reciveMessage(message, ...args) {
+          operations[message](...args);
+        }
+      }
+    })()
+
+    const t1 = new Tenant('小明');
+    const t2 = new Tenant('小红');
+
+    t1.findRoom();
+    t2.findRoom();
+  </script>
+</body>
+</html>

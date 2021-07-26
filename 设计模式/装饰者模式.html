@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /**
+     * 飞机大战，一级飞机发射普通子弹，二级飞机可以发射导弹，三级飞机可以发射原子弹
+     */
+    const plane = {
+      fire() {
+        console.log('发射普通子弹');
+      }
+    }
+    const missileDecorador = function () {
+      console.log('发射导弹');
+    }
+    const atomDecorator = function () {
+      console.log('发射原子弹');
+    }
+
+    console.log('一级飞机');
+    plane.fire();
+    console.log('二级飞机');
+    const fire1 = plane.fire;
+    plane.fire = function () {
+      fire1();
+      missileDecorador();
+    }
+    plane.fire();
+    console.log('三级飞机');
+    const fire2 = plane.fire;
+    plane.fire = function () {
+      fire2();
+      atomDecorator();
+    }
+    plane.fire();
+
+
+    /**
+     * 使用AOP实现装饰者 
+     */
+    (function () {
+      Function.prototype.before = function (fn) {
+        const _self = this;
+        return function () {
+          fn.apply(this, arguments);
+          return _self.apply(this.arguments);
+        }
+      }
+      Function.prototype.after = function (fn) {
+        const _self = this;
+        return function () {
+          const result = _self.apply(this.arguments)
+          fn.apply(this, arguments);
+          return result;
+        }
+      }
+
+      function fire() {
+        console.log('发射普通子弹');
+      }
+      fire();
+      const fire2 = fire.after(function () {
+        console.log('发射导弹');
+      })
+      fire2();
+      const fire3 = fire2.after(function () {
+        console.log('发射原子弹');
+      })
+      fire3();
+    })()
+    
+  </script>
+</body>
+</html>

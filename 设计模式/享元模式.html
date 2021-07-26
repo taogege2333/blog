@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /**
+     * 男女内衣各50件
+     *
+     */
+    (function () {
+      //  未使用享元模式
+      class Underware {
+        constructor(sex, underware) {
+          this.sex = sex;
+          this.underware = underware;
+        }
+        takePhoto() {
+          console.log(`sex=${this.sex}, underware=${this.underware}`);
+        }
+      }
+      // 男士内衣
+      for(let i = 1; i <= 50; i++) {
+        const mensUnderware = new Underware('man', 'underware' + i);
+        mensUnderware.takePhoto();
+      }
+      // 女士内衣
+      for(let i = 1; i <= 50; i++) {
+        const womenUnderware = new Underware('woman', 'underware' + i);
+        womenUnderware.takePhoto();
+      }
+    })();
+
+    (function () {
+      // 享元模式
+      // 不用创建100各内衣，只需要创建一个男模特和一个女模特，展示哪一件就穿哪一件
+      class MensUnderware {
+        setUnderware(underware) {
+          this.underware = underware;
+        }
+        takePhoto() {
+          console.log(`sex=man, underware=${this.underware}`);
+        }
+      }
+      class WomensUnderware {
+        setUnderware(underware) {
+          this.underware = underware;
+        }
+        takePhoto() {
+          console.log(`sex=woman, underware=${this.underware}`);
+        }
+      }
+
+      const manUnderware = new MensUnderware();
+      const womanUnderware = new WomensUnderware();
+
+      // 男士内衣
+      for(let i = 1; i <= 50; i++) {
+        manUnderware.setUnderware('underware' + i);
+        manUnderware.takePhoto();
+      }
+      // 女士内衣
+      for(let i = 1; i <= 50; i++) {
+        womanUnderware.setUnderware('underware' + i);
+        womanUnderware.takePhoto();
+      }
+
+    })();
+
+  </script>
+</body>
+</html>

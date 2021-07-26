@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /**
+     * 高级vip享受6折优惠，普通vip享受8者优惠，普通用户没有优惠
+     * 2--1--0
+     */
+    function seniorVip(type) {
+      if(type === 2) {
+        console.log('高级vip享受6折优惠');
+      } else {
+        return 'next';
+      }
+    }
+    function ordinaryVip(type) {
+      if(type === 1) {
+        console.log('普通vip享受8折优惠');
+      } else {
+        return 'next';
+      }
+    }
+    function ordinary(type) {
+      if(type === 0) {
+        console.log('普通用户不享受优惠');
+      } else {
+        console.log('用户级别不存在');
+      }
+    }
+    class Chain {
+      constructor(fn) {
+        this.fn = fn;
+        this.next = null;
+      }
+      setNext(next) {
+        this.next = next;
+      }
+      passRequest() {
+        const res = this.fn.apply(this, arguments);
+        if(res === 'next') {
+          return this.next && this.next.passRequest.apply(this.next, arguments);
+        }
+      }
+    }
+
+    const seniorV = new Chain(seniorVip);
+    const ordiV = new Chain(ordinaryVip);
+    const ordi = new Chain(ordinary);
+    seniorV.setNext(ordiV);
+    ordiV.setNext(ordi);
+
+    seniorV.passRequest(2)
+    seniorV.passRequest(1)
+    seniorV.passRequest(0)
+    seniorV.passRequest(-1)
+
+  </script>
+</body>
+</html>

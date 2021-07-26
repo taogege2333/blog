@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .form {
+      display: flex;
+      flex-direction: column;
+      width: 200px;
+      margin: 100px auto;
+    }
+    input {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <form class="form" id="form">
+    <input type="text" placeholder="请输入用户名" name="username">
+    <input type="text" placeholder="请输入密码" name="password">
+    <input type="text" placeholder="请输入手机号" name="phone">
+    <button type="button" onclick="onSubmit()">提交</button>
+  </form>
+  <script>
+    // 策略对象
+    const strategies = {
+      noEmpty(value, errMsg) {
+        return value === '' ? errMsg : undefined;
+      },
+      minLength(value, length, errMsg) {
+        return value.length < length ? errMsg : undefined;
+      },
+      isMobile(value, errMsg) {
+        return /^1(?=\d)[^2]\d{9}$/.test(value) ? undefined : errMsg;
+      }
+    }
+
+    // 环境类
+    class Validator {
+      cache = [];
+
+      // 添加策略
+      add(value, roles, errMsg) {
+        const [role, length] = roles.split(':');
+        const ary = [];
+        ary.push(value);
+        length && ary.push(length);
+        ary.push(errMsg);
+        this.cache.push(function () {
+          return strategies[role](...ary);
+        })
+      }
+
+      // 开始校验
+      start() {
+        for(let func of this.cache) {
+          const errMsg = func();
+          if(errMsg) {
+            return errMsg;
+          }
+        }
+      }
+    }
+
+    function onSubmit() {
+      const { username, password, phone } = document.getElementById('form');
+      const validator = new Validator();
+      validator.add(username.value, 'noEmpty', '用户名不能为空');
+      validator.add(password.value, 'minLength:6', '密码长度不能小于6');
+      validator.add(phone.value, 'isMobile', '手机号格式错误');
+      const errMsg = validator.start();
+      if(errMsg) {
+        alert(errMsg);
+      } else {
+        alert('提交成功');
+      }
+    }
+  </script>
+</body>
+</html>

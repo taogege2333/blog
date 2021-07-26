@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 观察者
+    class Watcher {
+      constructor(name) {
+        this.name = name;
+      }
+
+      update(msg) {
+        console.log(this.name + '收到消息: ' + msg);
+      }
+    }
+
+    class Observer {
+      constructor() {
+        this.watchers = []
+      }
+
+      on(watcher) {
+        this.watchers.push(watcher);
+      }
+
+      emit(msg) {
+        for(let w of this.watchers) {
+          w.update(msg);
+        }
+      }
+    }
+
+    const watcher1 = new Watcher('小明');
+    const watcher2 = new Watcher('小红');
+    const watcher3 = new Watcher('李明');
+
+    const observer = new Observer();
+    observer.on(watcher1);
+    observer.on(watcher2);
+    observer.on(watcher3);
+
+    observer.emit('hahah')
+  </script>
+  <script>
+    // 发布-订阅
+    class Substribe {
+      constructor() {
+        this.events = new Map;
+      }
+
+      on(key, cb) {
+        if(this.events.has(key)) {
+          const cbs = this.events.get(key);
+          cbs.push(cb);
+        } else {
+          this.events.set(key, [cb]);
+        }
+      }
+
+      off(key, cb) {
+        if(this.events.has(key)) {
+          const cbs = this.events.get(key);
+          for(let i in cbs) {
+            if(cbs[i] === cb) {
+              cbs.splice(i, 1);
+            }
+          }
+        }
+      }
+
+      emit(key) {
+        const cbs = this.events.get(key) || [];
+        for(let cb of cbs) {
+          cb();
+        }
+      }
+
+    }
+
+    const substribe = new Substribe();
+    function fn1() {
+      console.log('我是f1')
+    }
+    function fn2() {
+      console.log('我是f2')
+    }
+    function fn3() {
+      console.log('我是f3')
+    }
+    function fn4() {
+      console.log('我是f4')
+    }
+    substribe.on('ha', fn1);
+    substribe.on('ha', fn2);
+    substribe.on('ha', fn3);
+    substribe.on('hei', fn2);
+    substribe.on('hei', fn4);
+
+    substribe.emit('ha');
+    console.log('------------------------');
+    substribe.off('ha', fn2);
+    substribe.emit('ha');
+    console.log('------------------------');
+    substribe.emit('hei');
+  </script>
+</body>
+</html>

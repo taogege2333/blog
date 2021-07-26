@@ -1,36 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>工厂模式</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 </head>
 <body>
-	<script>
-		function OccupationFactory(role) {
-			if(this instanceof OccupationFactory) {
-				return new this[role]();
-			}
- 			return new OccupationFactory(role);
-		}
+  <script>
+    // 简单工厂模式
+    // function User({ name, viewPage }) {
+    //   this.name = name;
+    //   this.viewPage = viewPage;
+    // }
 
-		OccupationFactory.prototype = {
-			teacher: function () {
-				this.occu = "教师";
-			},
-			student: function () {
-				this.occu = "学生";
-			},
-			worker: function () {
-				this.occu = "工人";
-			}
-		}
+    // function getInstance(role) {
+    //   switch(role) {
+    //     case 'superAdmin':
+    //       return new User({name: '超级管理员', viewPage: ['首页', '通讯录', '发现页', '应用数据', '权限管理']});
+    //     case 'admin':
+    //       return new User({name: '管理员', viewPage: ['首页', '通讯录', '发现页', '应用数据']});
+    //     case 'user':
+    //       return new User({name: '普通用户', viewPage: ['首页', '通讯录', '发现页']});
+    //     default:
+    //       throw new Error('参数错误, 可选参数:superAdmin、admin、user');
+    //   }
+    // }
+    class User {
+      constructor({ name, viewPage }) {
+        this.name = name;
+        this.viewPage = viewPage;
+      }
 
+      static getInstance(role) {
+        switch(role) {
+          case 'superAdmin':
+            return new User({name: '超级管理员', viewPage: ['首页', '通讯录', '发现页', '应用数据', '权限管理']});
+          case 'admin':
+            return new User({name: '管理员', viewPage: ['首页', '通讯录', '发现页', '应用数据']});
+          case 'user':
+            return new User({name: '普通用户', viewPage: ['首页', '通讯录', '发现页']});
+          default:
+            throw new Error('参数错误, 可选参数:superAdmin、admin、user');
+        }
+      }
+    }
 
-		const teacher = OccupationFactory("teacher");
-		const student = OccupationFactory("student");
-		const worker = OccupationFactory("worker");
-		console.log(teacher, student, worker);
-	</script>
+    console.log(User.getInstance('superAdmin'));
+    console.log(User.getInstance('admin'));
+    console.log(User.getInstance('hahah'));
+  </script>
+  <script>
+    // 工厂方法模式
+    class User2 {
+      constructor(name = '', viewPage = []) {
+        if(new.target === User2) {
+          throw new Error('抽象类不能被实例化');
+        }
+        this.name = name;
+        this.viewPage = viewPage;
+      }
+    }
+
+    class UserFactory extends User2 {
+      constructor(name, viewPage) {
+        super(name, viewPage);
+      }
+
+      create(role) {
+        switch(role) {
+          case 'superAdmin':
+            return new UserFactory('超级管理员', ['首页', '通讯录', '发现页', '应用数据', '权限管理']);
+          case 'admin':
+            return new UserFactory('管理员', ['首页', '通讯录', '发现页', '应用数据']);
+          case 'user':
+            return new UserFactory('普通用户', ['首页', '通讯录', '发现页']);
+          default:
+            throw new Error('参数错误, 可选参数:superAdmin、admin、user');
+        }
+      }
+    }
+
+    const userFactory = new UserFactory();
+    console.log(userFactory.create('superAdmin'));
+    console.log(userFactory.create('admin'));
+    console.log(userFactory.create('hahah'));
+  </script>
+  <script>
+    // 抽象工厂模式
+    class UserOfQq {
+      constructor(name) {
+        this.name = name;
+      }
+    }
+    class UserOfWeixin {
+      constructor(name) {
+        this.name = name;
+      }
+    }
+    class UserOfWeibo {
+      constructor(name) {
+        this.name = name;
+      }
+    }
+
+    // 抽象工厂
+    function getAbstractUserFactory(type) {
+      switch(type) {
+        case 'qq':
+          return UserOfQq;
+        case 'weixin':
+          return UserOfWeixin;
+        case 'weibo':
+          return UserOfWeibo;
+        default:
+          throw new Error('参数错误, 可选参数: qq、weixin、weibo');
+      }
+    }
+
+    const QqUserClass = getAbstractUserFactory('qq');
+    const WeixinUserClass = getAbstractUserFactory('weixin');
+    const WeiboUserClass = getAbstractUserFactory('weibo');
+
+    console.log(new QqUserClass('qq小明'));
+    console.log(new WeixinUserClass('weixin小明'));
+    console.log(new WeiboUserClass('weibo小明'));
+  </script>
 </body>
 </html>

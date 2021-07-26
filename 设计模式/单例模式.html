@@ -1,57 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=	, initial-scale=1.0">
-	<title>单例模式</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单例模式</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .alert {
+      position: fixed;
+      top: 50px;
+      width: 100%;
+      text-align: center;
+    }
+    .alert-text {
+      display: inline-block;
+      min-width: 300px;
+      padding: 8px 15px;
+      border-radius: 8px;
+      box-shadow: -4px 4px 2px 0 #ddd;
+      background-color: #409eff;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
-	<script>
-		// 饿汉式
-		const singleHunger = (function () {
-			let instance;
+  <script>
+    const Alert = (function () {
+      function CreateAlert(msg) {
+        this.dom = document.createElement('div');
+        this.dom.classList.add('alert');
+        this.dom.innerHTML = `<div class="alert-text">${msg}</div>`;
+      }
+      CreateAlert.prototype = {
+        updateMsg(msg) {
+          if(msg) {
+            this.dom.querySelector('.alert-text').innerHTML = msg;
+          }
+        },
+        show(msg) {
+          this.updateMsg(msg);
+          document.body.appendChild(this.dom);
+        },
+        hide() {
+          document.body.removeChild(this.dom);
+        }
+      }
+      let alert = null;
+      return function (msg) {
+        if(!alert) {
+          alert = new CreateAlert(msg);
+        }
+        alert.updateMsg(msg);
+        return alert;
+      }
+    })()
 
-			function Person(name) {
-				this.name = name;
-			}
-
-			Person.prototype.say = function () {
-				console.log("hello " + this.name);
-			}
-
-			return function () {
-				if(instance) {
-					return instance;
-				}
-				return new Person("小明");
-			}
-		})()
-
-		const p = singleHunger();
-		console.log(p);
-		p.say();
-
-
-		// 懒汉式
-		const singleLazy = (function() {
-			let instance = new Person("小明");;
-
-			function Person(name) {
-				this.name = name;
-			}
-
-			Person.prototype.say = function () {
-				console.log("hello " + this.name);
-			}
-
-			return function () {
-				return instance;
-			}
-		})();
-
-		const p = singleLazy();
-		console.log(p);
-		p.say();
-	</script>
+    const alert1 = new Alert('我是alert1');
+    const alert2 = new Alert('我是alert2');
+    console.log(alert1 === alert2); // true
+  </script>
 </body>
 </html>
