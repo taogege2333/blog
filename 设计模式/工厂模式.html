@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>工厂模式</title>
+</head>
+<body>
+	<script>
+		function OccupationFactory(role) {
+			if(this instanceof OccupationFactory) {
+				return new this[role]();
+			}
+ 			return new OccupationFactory(role);
+		}
+
+		OccupationFactory.prototype = {
+			teacher: function () {
+				this.occu = "教师";
+			},
+			student: function () {
+				this.occu = "学生";
+			},
+			worker: function () {
+				this.occu = "工人";
+			}
+		}
+
+
+		const teacher = OccupationFactory("teacher");
+		const student = OccupationFactory("student");
+		const worker = OccupationFactory("worker");
+		console.log(teacher, student, worker);
+	</script>
+</body>
+</html>

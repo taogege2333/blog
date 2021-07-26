@@ -1,0 +1,159 @@
+1.什么是同源策略与限制
+	同源策略限制从一个源加载的文档或脚本如何与来自另一个源的资源进行交互。
+	这是一个用于隔离潜在恶意文件的关键的安全机制。
+
+	Cookie、LocalStorage和IndexDB无法读取
+	DOM无法获取
+	AJAX请求不能发送
+
+
+2.前后端如何通信
+
+	Ajax
+	WebSocket
+	CORS
+
+3.如何创建Ajax
+
+	function Ajax(obj) {
+		//创建ajax对象
+		var xhr = XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+		//获取传入对象的参数
+		var url = obj.url;
+		var type = obj.type.tpUpperCase();
+		var dataArr = [];
+		for(var i in obj) {
+			dataArr.push(i+'='+obj[i]);
+		}
+		var time = obj.time;
+		//建立连接并发送请求
+		if(type === 'GET') {
+			var urlStr = dataArr.length ? url+'?'+dataArr.join('&')+'&t='+new Date().getTime() : 
+						 url+'?t='+new Date().getTime();
+			xhr.open(type, urlStr, true);
+			xhr.send();
+		}
+		if(type === 'POST') {
+			xhr.open(type, url, true);
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+			xhr.send(dataArr.join('&'));
+		}
+
+		xhr.onreadystatechange = function () {
+			if(xhr.readyState === 4) {
+				clearTimeout(timer);
+				if(xhr.status === 200) {
+					if(obj.success&&obj.success instanceof Function) {
+						var res = Json.parse(xhr.responseText);
+						obj.success.call(xhr, res);
+					}
+				} else {
+					if(obj.error&&obj.error instanceof Function) {
+						obj.error.call(xhr, res);
+					}
+				}
+			}
+		};
+
+		var timer = null;
+		if(time) {
+			timer = setTimeout(function () {
+				xhr.abort();
+				clearTimeout(timer);
+			}, time);
+		}
+
+	}
+
+
+4.跨域通信的几种方式
+
+	JSONP
+	Hash
+	postMessage
+	WebSocket
+	CORS
+
+5.JSONP的实现
+
+	原理：根据script标签支持跨域的功能，动态创建script标签，src为要访问的资源地址，在资源地址中再加一个参数callback函数名，服务器拿到callback函数名后会调用callback函数，将前端请求的数据作为参数传入，前提是在前端要声明callback函数
+
+	实现：
+	function jsonp(obj) {
+		var callbackName = obj.callbackName;
+		if(obj.data) {
+			var dataArr = [];
+			for(var i in obj.data) {
+				dataArr.push(obj.data[i]);
+			}
+		}
+		var url = obj.data ? url+'?'+dataArr.join('&')+'&callback='+callbackName :	
+				  url+'?callback='+callbackName;
+		//声明callback函数
+		window[callbackName] = function () {
+			if(obj.success&&obj.success instanceof Function) {
+				obj.success(arguments[0]);
+			}
+		};
+		//创建script标签
+		var script = document.createElement('script');
+		script.setAttribute('src', url);
+
+		script.onload = script.onreadystatechange = function () {
+			//如果script加载完成
+			if(!script.readyState||/loaded|complete/.test(script.readyState)) {
+				script.onload = script.onreadystatechange = null;
+				//删除这个script标签
+				document.getElementsByTagName('head')[0].removeChild(script);
+				//删除callback函数
+				window[callbackName] = null;
+			}
+		};
+
+		//当script标签加载失败则调用失败的回调
+		script.onerror = function () {
+			if(obj.error&&obj.error instanceof Function) {
+				obj.error();
+			}
+		}
+		//将script标签添加到文档中
+		document.getElementsByTagName('head')[0].appendChild(script);
+	}
+
+
+6.iframe  a页面之中嵌套b页面
+
+	1.hash
+		a--->b
+		获取到iframe，改变地址加上#data,然后在b页面中监听hash的改变，onhashchange事件中window.location.hash可以获取到所有的hash，即处理后可以获取到data
+
+	2.postMessage
+		a--->b
+		获取到b窗口的window对象 iframe.contentWindow，
+		然后传值iframe.contentWindow.postMessage('data', 'b页面的地址')
+		然后在b页面添加监听
+		window.addEventListener('message', function (event) {
+			event.origin  //a页面的地址
+			event.source  //a页面window对象的引用
+			ecent.data  
+		})
+
+
+7.WebSocket
+
+	var ws = new WebSocket('wss:通信地址');  //wss:加密 ws:未加密
+
+	ws.onopen = function (event) {
+		ws.send('data');
+	};
+
+	ws.onmessage = function (event) {
+		event.data //接收数据
+
+		ws.close();
+	};
+
+	ws.onclose = function () {}
+
+8.cors
+	http://www.ruanyifeng.com/blog/2016/04/cors.html
