@@ -1,3 +1,4 @@
+```javascript
 /*封装获取水平与垂直滚动的距离，兼容*/
 function scroll() {
 	if(window.pageYOffset) {
@@ -122,6 +123,7 @@ function buffer(obj, json, fn) {
 			}
 		}
 	}, 20);
+
 }
 
 
@@ -160,4 +162,7 @@ function Ajax(method, url, success, fail) {
 			}
 		}
 	}
+
 }
+```
+

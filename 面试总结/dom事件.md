@@ -1,0 +1,60 @@
+1. dom事件的级别
+   	dom0: element.onclick = function() {}
+   	dom1: 没有事件的更新
+   	dom2: element.addEventListener('click', function() {}, false) //true:捕获阶段执行，false:冒泡阶段执行
+   	dom3: element.addEventListener('keyup', function() {}, false) //新增了一些事件
+
+2. dom事件的模型
+   	捕获和冒泡
+
+3. dom事件流
+   	三个阶段
+   	捕获阶段-->目标阶段-->冒泡阶段
+   	首先捕获事件(捕获阶段)，然后事件到达目标元素(目标阶段)，事件通过冒泡过程到达window对象(冒泡阶段)
+
+4. dom事件捕获的具体流程
+   	window-->document-->html-->body-->...-->目标元素
+   	dom事件冒泡与之相反
+
+5. event对象常见应用
+
+   ```javascript
+   // 阻止默认事件
+   event.preventDefault()
+   // 阻止事件冒泡
+   event.stopPropagation()
+   // exp:当一个元素绑定了两个点击事件a和b，当点击元素时a、b都会执行，但在a事件中添加该方法，则b事件不会被执行
+   event.stopImmediatePropagation()
+   // exp:用for循环给多个元素添加事件问题的优化:可以将多个元素的事件委托给他们的父元素，其中event.target是触发事件的元素，event.currentTarget是被委托的父元素(即当前绑定事件的元素)
+   event.currentTarget  event.target
+   ```
+
+6. 自定义事件
+       ```javascript
+       // 1.
+       var eve = new Event('custome');   //声明事件
+       ele.addEventListener('custome', function () {   绑定事件名称
+         console.log('custome');
+       });
+       ele.dispatchEvent(eve);   //触发事件
+       
+       // 2.还可以通过CustomEvent()来声明事件，其中可以传两个参数，一个是事件名，一个是object保存事件的一些自定义参数
+       var ev = document.getElementById('ev');
+       var event = new CustomEvent('custome', {
+           detail: {         //可以通过detail传递一些参数
+             dog:"wo", 
+             cat:"mio"
+           }
+       });
+       ev.addEventListener('custome', function (e) {
+           console.log(e.detail);
+           console.log('test CustomEvent');
+       });
+       ev.dispatchEvent(event);
+       ```
+
+   
+
+> 扩展小知识
+> 	获取body节点:document.body
+> 	获取html节点:document.documentElement
